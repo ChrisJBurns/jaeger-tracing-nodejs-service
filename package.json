@@ -1,0 +1,26 @@
+{
+  "name": "jaeger-tracing-nodejs-service",
+  "version": "1.0.0",
+  "description": "This is a NodeJS project to demo Jaeger Distributed Tracing",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChrisJBurns/jaeger-tracing-nodejs-service.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ChrisJBurns/jaeger-tracing-nodejs-service/issues"
+  },
+  "homepage": "https://github.com/ChrisJBurns/jaeger-tracing-nodejs-service#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "jaeger-client": "^3.18.0",
+    "opentracing": "^0.14.4",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.5",
+  }
+}
