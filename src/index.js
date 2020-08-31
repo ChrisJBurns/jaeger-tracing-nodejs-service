@@ -1,16 +1,16 @@
 'use strict';
 
-const express = require('express')
-const app = express()
+// const express = require('express')
+// const app = express()
 const { initTracer } = require('./tracing.js');
 const { Tags, FORMAT_HTTP_HEADERS } = require('opentracing');
 const request = require('request-promise');
 
 const tracer = initTracer('nodejs-service');
 
-const port = 8090;
+// const port = 8090;
 
-function makeRequest(rootSpan) {
+module.exports.makeRequest = rootSpan => {
     const span = tracer.startSpan("GET to /get-employees", {childOf: rootSpan.context()});
     span.log({ message: 'Making call to get employee' });
 
@@ -35,20 +35,22 @@ function makeRequest(rootSpan) {
         });
 };
 
-app.get('/get-employees', (req, res)  => {
-    const parentSpanContext = tracer.extract(FORMAT_HTTP_HEADERS, req.headers)
-    const rootSpan = tracer.startSpan('"GET to /get-employees', {
-        childOf: parentSpanContext,
-        tags: {[Tags.SPAN_KIND]: Tags.SPAN_KIND_RPC_SERVER}
-    });
-    rootSpan.log({ message: 'Endpoint request receieved' });
+// app.get('/get-employees', (req, res)  => {
+//     const parentSpanContext = tracer.extract(FORMAT_HTTP_HEADERS, req.headers)
+//     const rootSpan = tracer.startSpan('"GET to /get-employees', {
+//         childOf: parentSpanContext,
+//         tags: {[Tags.SPAN_KIND]: Tags.SPAN_KIND_RPC_SERVER}
+//     });
+//     rootSpan.log({ message: 'Endpoint request receieved' });
 
-    makeRequest(rootSpan);
+//     makeRequest(rootSpan);
 
-    rootSpan.finish()
-    res.send(`Hello, Chris`);
-})
+//     rootSpan.finish()
+//     res.send(`Hello, Chris`);
+// })
 
-app.listen(port, () => {
-    console.log('Formatter app listening on port ' + port);
-})
+// module.exports.makeRequest;
+
+// app.listen(port, () => {
+//     console.log('Formatter app listening on port ' + port);
+// })
