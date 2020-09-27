@@ -4,7 +4,9 @@ const { SimpleSpanProcessor } = require("@opentelemetry/tracing");
 const { JaegerExporter } = require('@opentelemetry/exporter-jaeger');
 
 const serviceName = process.env.SERVICE_NAME || "nodejs-service";
-const jaegerHost = process.env.JAEGER_HOST || 'localhost';
+const jaegerAgentHost = process.env.JAEGER_AGENT_HOST || 'localhost';
+const jaegerAgentPort = process.env.JAEGER_AGENT_PORT || 'localhost';
+
 
 const provider = new NodeTracerProvider({
     plugins: {
@@ -26,8 +28,8 @@ provider.addSpanProcessor(
   new SimpleSpanProcessor(
     new JaegerExporter({
         serviceName: serviceName,
-        host: jaegerHost,
-        port: 6832
+        host: jaegerAgentHost,
+        port: jaegerAgentPort
     })
   )
 );

@@ -6,24 +6,40 @@ const app = express()
 app.use(express.json());
 app.use(cors());
 
-const port = process.env.SERVER_PORT || 3000;
+const port = process.env.SERVER_PORT || 8081;
+const JAVA_SERVICE_URL = process.env.JAVA_SERVICE_URL || "http://localhost:8090/";
+const GO_SERVICE_URL = process.env.GO_SERVICE_URL || "http://localhost:8091/";
+const PYTHON_SERVICE_URL = process.env.PYTHON_SERVICE_URL || "http://localhost:8092/";
 
 async function getGrade(occupation) {
     try {
-        const resp = await axios.get('http://localhost:8090/salary-grade/' + occupation);
+        const resp = await axios.get(JAVA_SERVICE_URL + 'salary-grade/' + occupation);
         return resp.data.grade;
     } catch (err) {
-        console.error(err);
+        throw new Error(err.toString());
+    }
+}
+
+async function getSalaryAmount(grade) {
+    try {
+        const resp = await axios.get(PYTHON_SERVICE_URL + 'salary-amount-for-grade/' + grade);
+        min = resp.data.minimum;
+        max = resp.data.maximum;
+
+        // console.log(min);
+
+        // generate random salary between min and max
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    } catch (err) {
         throw new Error(err.toString());
     }
 }
 
 async function createEmployee(data) {
     try {
-        const resp = await axios.post('http://localhost:8091/employee', data);
+        const resp = await axios.post(GO_SERVICE_URL + 'employee', data);
         return resp.data;
     } catch (err) {
-        console.error(err);
         throw new Error(err.toString());
     } 
 }
@@ -31,10 +47,9 @@ async function createEmployee(data) {
 async function getEmployeeByID(id) {
     try {
         console.log("Getting employee");
-        const resp = await axios.get(`http://localhost:8091/employee/${id}`);
+        const resp = await axios.get(GO_SERVICE_URL + `employee/${id}`);
         return resp.data;
     } catch (err) {
-        console.error(err);
         throw new Error(err.toString());
     } 
 }
@@ -69,6 +84,16 @@ app.post('/create-employee', async (req, res) => {
         });
     }
 
+    let salaryAmount = {};
+    try {
+        salaryAmount = await getSalaryAmount(grade);
+    } catch (err) {
+        console.error(err);
+        return res.status(404).send({
+            message: 'Not found'
+        });
+    }
+
     let response = {};
     try {
         response = await createEmployee({
@@ -76,6 +101,7 @@ app.post('/create-employee', async (req, res) => {
             lastName: body.lastName,
             occupation: occupation,
             salaryGrade: grade,
+            salaryAmount: salaryAmount.toString(),
         })
 
     } catch (err) {
