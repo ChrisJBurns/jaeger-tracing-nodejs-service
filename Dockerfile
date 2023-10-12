@@ -1,4 +1,4 @@
-FROM node:lts-alpine
+FROM node:16.3.0-alpine
 
 # make the 'app' folder the current working directory
 WORKDIR /app
